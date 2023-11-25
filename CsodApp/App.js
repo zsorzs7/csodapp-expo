@@ -16,7 +16,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <CsodAppStack.Navigator initialRouteName="Progress" screenOptions={{headerShown: false}}>
+        <CsodAppStack.Navigator initialRouteName="Progress" screenOptions={{headerShown: false, cardStyle: {backgroundColor: 'red'}}}>
           <CsodAppStack.Screen name="Read" component={CsodAppReadStack} options={{animationEnabled: false}} />
           <CsodAppStack.Screen name="Progress" component={CsodAppProgressStack} options={{animationEnabled: false}} />
           <CsodAppStack.Screen name="Settings" component={CsodAppSettingsStack} options={{animationEnabled: false}} />
