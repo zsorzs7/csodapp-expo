@@ -1,12 +1,22 @@
+/* region */
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+/* endregion */
+
+/* region Navigation */
+import { NavigationContainer } from '@react-navigation/native';
+import CsodAppListenStack from './stacks/CsodAppListenStack';
+import { createStackNavigator } from '@react-navigation/stack';
+const CsodAppStack = createStackNavigator();
+/* endregion */
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <CsodAppStack.Navigator>
+        <CsodAppStack.Screen name="Aktuális gyakorlat" component={CsodAppListenStack} />
+      </CsodAppStack.Navigator>
+    </NavigationContainer>
   );
 }
 
