@@ -1,11 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
+import Menu from '../components/Menu';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function CsodAppSettingsStack() {
   return (
     <View style={styles.container}>
       <Text>SettingsStack</Text>
-      <StatusBar styles="auto" />
+      <Menu />
     </View>
   );
 }

@@ -16,10 +16,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <CsodAppStack.Navigator initialRouteName="Progress">
-          <CsodAppStack.Screen name="Read" component={CsodAppReadStack} />
-          <CsodAppStack.Screen name="Progress" component={CsodAppProgressStack} />
-          <CsodAppStack.Screen name="Settings" component={CsodAppSettingsStack} />
+        <CsodAppStack.Navigator initialRouteName="Progress" screenOptions={{headerShown: false}}>
+          <CsodAppStack.Screen name="Read" component={CsodAppReadStack} options={{animationEnabled: false}} />
+          <CsodAppStack.Screen name="Progress" component={CsodAppProgressStack} options={{animationEnabled: false}} />
+          <CsodAppStack.Screen name="Settings" component={CsodAppSettingsStack} options={{animationEnabled: false}} />
         </CsodAppStack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
