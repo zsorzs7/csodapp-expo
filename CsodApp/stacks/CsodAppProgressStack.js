@@ -5,7 +5,6 @@ import Menu from '../components/Menu';
 /* region React */
 import { StyleSheet, Text, View, Button, ScrollView, Dimensions, TouchableOpacity, Image, Modal, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
-import { BlurView } from "expo-blur";
 /* endregion */
 
 /* region FireStore */
@@ -23,7 +22,6 @@ const firebaseConfig = {
 };
 /* endregion */
 
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -34,7 +32,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function CsodAppProgressStack() {
   const [isModalOpened, setIsModalOpened] = useState(false);
   
-
   /* region Exercises */
   const [exercises, setExercises] = useState(0);
 
@@ -138,20 +135,20 @@ export default function CsodAppProgressStack() {
           >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-            <View style={styles.modalBox}>
-              <Text style={styles.modalText}>Végeztél mára?</Text>
-              <View style={styles.modalButtonContainer}>
-              <TouchableOpacity onPress={() => {
-              setIsModalOpened(false);
-              }} style={styles.modalNoButton}>
-              <Text style={styles.textNoButton}>Nem</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalYesButton} onPress={() => {
-              setProgressToAsyncStorage(progress+1);
-              }}>
-              <Text style={styles.text}>Igen</Text>
-              </TouchableOpacity>
-              </View>
+              <View style={styles.modalBox}>
+                <Text style={styles.modalText}>Végeztél mára?</Text>
+                <View style={styles.modalButtonContainer}>
+                  <TouchableOpacity onPress={() => {
+                    setIsModalOpened(false);
+                    }} style={styles.modalNoButton}>
+                    <Text style={styles.textNoButton}>Nem</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.modalYesButton} onPress={() => {
+                    setProgressToAsyncStorage(progress+1);
+                  }}>
+                    <Text style={styles.text}>Igen</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -245,14 +242,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 40,
     alignItems: 'center',
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 4,
-    // elevation: 5,
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
