@@ -6,6 +6,7 @@ import Menu from '../components/Menu';
 import { StyleSheet, Text, View, Button, ScrollView, Dimensions, TouchableOpacity, Image, Modal, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 
 /* endregion */
 
@@ -37,7 +38,7 @@ export default function CsodAppProgressStack() {
   const [isModalOpened, setIsModalOpened] = useState(false);
   
   /* region Exercises */
-  const [exercises, setExercises] = useState(0);
+  const [exercises, setExercises] = useState([]);
 
   fetchExercises = async () => {
     try {
@@ -124,6 +125,17 @@ export default function CsodAppProgressStack() {
   }
   /* endregion */
 
+  /* region Navigate */
+  const setLastRouteProgress = useStoreActions((actions) => actions.setLastRouteProgress);
+  const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
+
+  const navigateToExercise = (id, title) => {
+    setCurrentlyViewedExercise(title);
+    setLastRouteProgress();
+    navigation.navigate('ExerciseRead');
+  }
+  /* endregion */
+
   useEffect(() => {  
     getExercisesFromAsyncStorage();
     getProgressFromAsyncStorage();
@@ -169,7 +181,7 @@ export default function CsodAppProgressStack() {
           <TouchableOpacity onPress={() => { viewPrevious(); }}>
             <Image style={styles.smallIcon} source={require('../assets/old/back.png')}></Image>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => { navigateToExercise(viewed, exercises[viewed]); }}>
             <Image style={styles.bigIcon} source={require('../assets/old/expand.png')}></Image>
          </TouchableOpacity>
          {progress > viewed &&
@@ -204,7 +216,7 @@ const styles = StyleSheet.create({
  progressId: {
     textAlign: 'center',
     paddingTop: 150,
-    fontSize: 20,
+    fontSize: 26,
     paddingBottom: 18
   },
   progressText: {

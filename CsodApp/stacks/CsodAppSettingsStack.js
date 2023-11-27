@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function CsodAppSettingsStack() {
   return (
     <View style={styles.container}>
-      <Text>SettingsStack</Text>
+      <Text>Nézz vissza később!</Text>
       <Menu />
     </View>
   );

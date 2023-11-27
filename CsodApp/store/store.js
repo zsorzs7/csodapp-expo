@@ -2,6 +2,10 @@ import {createStore, action, persist} from "easy-peasy";
 
 export default createStore(
     persist({
+        currentlyViewedExercise: 0,
+        setCurrentlyViewedExercise: action((state, exercise) => {
+            state.currentlyViewedExercise = exercise;
+        }),        
         lastRoute: 'read',
         setLastRouteRead: action((state) => {
             state.lastRoute = 'Read';

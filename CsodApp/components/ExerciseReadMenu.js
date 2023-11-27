@@ -1,12 +1,20 @@
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import {useStoreState} from 'easy-peasy';
+
 
 export default function ExerciseReadMenu() {
     const navigation = useNavigation();
 
+    const lastRoute = useStoreState((state) => state.lastRoute);
+
+    const navigateToLastRoute = () => {
+        if(navigation.navigate(lastRoute));
+    }
+
     return (
     <View style={menuStyles.menu}>
-      <TouchableOpacity onPress={() => { navigation.navigate('Progress') }}>
+      <TouchableOpacity onPress={() => { navigateToLastRoute(); }}>
         <Image style={menuStyles.menuItem} source={require('../assets/old/back.png')}></Image>
       </TouchableOpacity>
     </View>    
