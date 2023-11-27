@@ -5,6 +5,8 @@ import Menu from '../components/Menu';
 /* region React */
 import { StyleSheet, Text, View, Button, ScrollView, Dimensions, TouchableOpacity, Image, Modal, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
 /* endregion */
 
 /* region FireStore */
@@ -30,6 +32,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 /* endregion */
 
 export default function CsodAppProgressStack() {
+  const navigation = useNavigation();
+
   const [isModalOpened, setIsModalOpened] = useState(false);
   
   /* region Exercises */
@@ -37,17 +41,14 @@ export default function CsodAppProgressStack() {
 
   fetchExercises = async () => {
     try {
-
-      // console.log(firebaseConfig);
       const app = initializeApp(firebaseConfig);      
       const db = getFirestore(app);
       const table = collection(db, "420");
       const titleCollection = await getDocs(table);
-      const exercises = titleCollection.docs.map((doc) => doc.data());
-      exercises.map((title, idx) => (title.index = idx));
-      setExercises(exercises);
-      setExercisesToAsyncStorage();
-
+      const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
+      exercisesFromFirebase.map((title, idx) => (title.index = idx));
+      setExercises(exercisesFromFirebase);
+      setExercisesToAsyncStorage(exercisesFromFirebase);
     } catch (error) {
       console.log(error);
     }
@@ -59,18 +60,23 @@ export default function CsodAppProgressStack() {
   const [viewed, setViewed] = useState(0);
 
   /* region Async Storage */
-  setExercisesToAsyncStorage = async (exercises) => {
+  setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
     try {
-      await AsyncStorage.setItem('exercises', JSON.stringify(exercises));
+      await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
     } catch (error) {
       console.log(error);
     }
   }
 
 
-  getExercisesFromAsyncStorage = async (exercises) => {
+  getExercisesFromAsyncStorage = async () => {
     try {
-      const exercises = await AsyncStorage.getItem('exercises');
+      const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
+      if(exercisesFromAsyncStorage !== null) {
+        setExercises(JSON.parse(exercisesFromAsyncStorage));
+      } else {
+        fetchExercises();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -119,14 +125,12 @@ export default function CsodAppProgressStack() {
   /* endregion */
 
   useEffect(() => {  
-    fetchExercises();
     getExercisesFromAsyncStorage();
     getProgressFromAsyncStorage();
   }, []);
 
   return (
     <View style={styles.container}>
-
         {/* region Modal */}
         <Modal
           animationType="none"
@@ -157,9 +161,8 @@ export default function CsodAppProgressStack() {
 
       {/* region Progress */}
       <ScrollView contentContainerStyle={{ marginLeft: 0, width: screenWidth, justifyContent: 'center', alignItems: 'center', paddingTop: 60, paddingLeft: 20, paddingRight: 20}} contentInset={{top: 200, left: 0, bottom: 0, right: 0}}>
-        <Text style={styles.progressId}>{viewed}. GYAKORLAT</Text>
+        <Text style={styles.progressId}>{viewed + 1}. GYAKORLAT</Text>
         <Text style={styles.progressText}>{exercises[viewed]?.title || 'Szentségem megáldja a világot.'}</Text>
-        <Text>{isModalOpened}</Text>
 
         {/* region Actions */}
         <View style={styles.progressIcons}>
