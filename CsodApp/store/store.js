@@ -2,26 +2,32 @@ import {createStore, action, persist} from "easy-peasy";
 
 export default createStore(
     persist({
-        currentlyViewedExercise: 0,
+        /* region Exercises */
+        exercises: [],
+        setExercises: action((state, exercise) => {
+            state.currentlyViewedExercise = exercise;
+        }),
+        /* endregion */
+
+        /* region Progress */
+        currentlyViewedExercise: {},
         setCurrentlyViewedExercise: action((state, exercise) => {
             state.currentlyViewedExercise = exercise;
-        }),        
+        }),
+        /* endregion */
+
+        /* region Navigation */
         lastRoute: 'read',
-        setLastRouteRead: action((state) => {
-            state.lastRoute = 'Read';
+        setLastRoute: action((state, route) => {
+            state.lastRoute = route;
         }),
-        setLastRouteProgress: action((state) => {
-            state.lastRoute = 'Progress';
+        /* endregion */
+
+        /* region Daily Progress */
+        dailyProgress: 0,
+        setDailyProgress: action((state, progress) => {
+            state.dailyProgress = progress;
         }),
-        doneExercisesToday: 0,
-        addDoneExercise: action((state) => {
-            state.doneExercisesToday += 1;
-        }),
-        resetDoneExercisesToday: action((state) => {
-            state.doneExercisesToday = 0;
-        }),
-        setDoneExercisesToday: action((state, number) => {
-            state.doneExercisesToday = number;
-        })
+        /* endregion */
     })
 );

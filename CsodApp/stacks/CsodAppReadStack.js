@@ -4,18 +4,18 @@ import {useStoreState, useStoreActions} from "easy-peasy";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import Menu from "../components/Menu";
 
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, query } from "firebase/firestore";
-import { useNavigation } from '@react-navigation/native';
+import {initializeApp} from "firebase/app";
+import {getFirestore, collection, getDocs, query} from "firebase/firestore";
+import {useNavigation} from '@react-navigation/native';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDDvcz0oGtL8gFQq0OSidN_BjQINIOj3vg",
-  authDomain: "csodapp-471f4.firebaseapp.com",
-  projectId: "csodapp-471f4",
-  storageBucket: "csodapp-471f4.appspot.com",
-  messagingSenderId: "41075695763",
-  appId: "1:41075695763:web:a7973be2a4d290eca06d66",
-  measurementId: "G-8B1367S9RM"
+    apiKey: "AIzaSyDDvcz0oGtL8gFQq0OSidN_BjQINIOj3vg",
+    authDomain: "csodapp-471f4.firebaseapp.com",
+    projectId: "csodapp-471f4",
+    storageBucket: "csodapp-471f4.appspot.com",
+    messagingSenderId: "41075695763",
+    appId: "1:41075695763:web:a7973be2a4d290eca06d66",
+    measurementId: "G-8B1367S9RM"
 };
 /* endregion */
 
@@ -24,113 +24,113 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function CsodAppProgressStack() {
-  const navigation = useNavigation();
+    const navigation = useNavigation();
 
-  const [isModalOpened, setIsModalOpened] = useState(false);
-  
-  /* region Exercises */
-  const [exercises, setExercises] = useState([]);
+    const [isModalOpened, setIsModalOpened] = useState(false);
 
-  fetchExercises = async () => {
-    try {
-      const app = initializeApp(firebaseConfig);      
-      const db = getFirestore(app);
-      const table = collection(db, "420");
-      const titleCollection = await getDocs(table);
-      const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
-      exercisesFromFirebase.map((title, idx) => (title.index = idx));
-      setExercises(exercisesFromFirebase);
-      setExercisesToAsyncStorage(exercisesFromFirebase);
-    } catch (error) {
-      console.log(error);
+    /* region Exercises */
+    const [exercises, setExercises] = useState([]);
+
+    fetchExercises = async () => {
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const table = collection(db, "420");
+            const titleCollection = await getDocs(table);
+            const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
+            exercisesFromFirebase.map((title, idx) => (title.index = idx));
+            setExercises(exercisesFromFirebase);
+            setExercisesToAsyncStorage(exercisesFromFirebase);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    /* endregion */
+
+    /* region Progress */
+    const [progress, setProgress] = useState(0);
+    const [viewed, setViewed] = useState(0);
+
+    /* region Async Storage */
+    setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
+        try {
+            await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
+        } catch (error) {
+            console.log(error);
+        }
     }
-  };
-  /* endregion */
 
-  /* region Progress */
-  const [progress, setProgress] = useState(0);
-  const [viewed, setViewed] = useState(0);
 
-  /* region Async Storage */
-  setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
-    try {
-      await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
-    } catch (error) {
-      console.log(error);
+    getExercisesFromAsyncStorage = async () => {
+        try {
+            const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
+            if (exercisesFromAsyncStorage !== null) {
+                setExercises(JSON.parse(exercisesFromAsyncStorage));
+            } else {
+                fetchExercises();
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
-  }
 
 
-  getExercisesFromAsyncStorage = async () => {
-    try {
-      const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
-      if(exercisesFromAsyncStorage !== null) {
-        setExercises(JSON.parse(exercisesFromAsyncStorage));
-      } else {
-        fetchExercises();
-      }
-    } catch (error) {
-      console.log(error);
+    setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
+        try {
+            setProgress(progress);
+            setIsModalOpened(false);
+            if (isSetViewed) {
+                setViewed(progress);
+            }
+            await AsyncStorage.setItem(
+                'progress',
+                `${progress}`
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    getProgressFromAsyncStorage = async () => {
+        try {
+            const progress = await AsyncStorage.getItem('progress');
+            if (progress !== null) {
+                setProgress(parseInt(progress));
+                setViewed(parseInt(progress));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    /* endregion */
+
+    /* region Viewed */
+    viewPrevious = () => {
+        if (viewed > 0) {
+            setViewed(viewed - 1);
+        }
     }
-  }
 
-
-  setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
-    try {
-      setProgress(progress);
-      setIsModalOpened(false);
-      if(isSetViewed) {
-        setViewed(progress);
-      }
-      await AsyncStorage.setItem(
-        'progress',
-        `${progress}`
-      );
-    } catch (error) {
-      console.log(error);
+    viewNext = () => {
+        setViewed(viewed + 1);
     }
-  };
+    /* endregion */
 
-  getProgressFromAsyncStorage = async () => {
-    try {
-      const progress = await AsyncStorage.getItem('progress');
-      if (progress !== null) {
-        setProgress(parseInt(progress));
-        setViewed(parseInt(progress));
-      }
-    } catch (error) {
-      console.log(error);
+    /* region Navigate */
+    const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
+    const setLastRoute = useStoreActions((actions) => actions.setLastRoute);
+
+    const navigateToExercise = (id, title) => {
+        setCurrentlyViewedExercise(title);
+        setLastRoute('Read');
+        navigation.navigate('ExerciseRead');
     }
-  };
-  /* endregion */
+    /* endregion */
 
-  /* region Viewed */
-  viewPrevious = () => {
-    if(viewed > 0) {
-      setViewed(viewed - 1);
-    }
-  }
-
-  viewNext = () => {
-      setViewed(viewed + 1);
-  }
-  /* endregion */
-
-  /* region Navigate */
-  const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
-  const setLastRouteRead = useStoreActions((actions) => actions.setLastRouteRead);
-
-  const navigateToExercise = (id, title) => {
-    setCurrentlyViewedExercise(title);
-    setLastRouteRead();
-    navigation.navigate('ExerciseRead');
-  }
-  /* endregion */
-
-  useEffect(() => {  
-    getExercisesFromAsyncStorage();
-    getProgressFromAsyncStorage();
-  }, []);
+    useEffect(() => {
+        getExercisesFromAsyncStorage();
+        getProgressFromAsyncStorage();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -139,17 +139,20 @@ export default function CsodAppProgressStack() {
                 <View style={styles.pageContent}>
                     {exercises.map((title, idx) => (
                         title.index >= 0 ?
-                            <TouchableOpacity key={idx + title} onPress={() => {navigateToExercise(idx, exercises[idx])}} style={(idx === exercises.length - 1) ? styles.borderlessTitleContainer : styles.titleContainer }>
+                            <TouchableOpacity key={idx + title} onPress={() => {
+                                navigateToExercise(idx, exercises[idx])
+                            }}
+                                              style={(idx === exercises.length - 1) ? styles.borderlessTitleContainer : styles.titleContainer}>
                                 <Text style={styles.titleItemId}>
                                     {title.index + 1}.
                                 </Text>
                                 <Text style={styles.titleItemText}>
                                     {title.title}
                                 </Text>
-                    </TouchableOpacity> : <Text></Text>))}
+                            </TouchableOpacity> : <Text></Text>))}
                 </View>
             </ScrollView>
-            <Menu />
+            <Menu/>
         </View>
     );
 };
