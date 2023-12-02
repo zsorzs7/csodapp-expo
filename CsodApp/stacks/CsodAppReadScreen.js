@@ -1,9 +1,9 @@
-import ExerciseReadMenu from '../components/ExerciseReadMenu';
+import ReadMenu from '../components/ReadMenu';
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import {useStoreState, useStoreActions} from "easy-peasy";
 import {useState, useEffect} from 'react';
 
-export default function CsodAppExerciseReadStack() {
+export default function CsodAppReadScreen() {
     const currentlyViewedExercise = useStoreState((state) => state.currentlyViewedExercise);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export default function CsodAppExerciseReadStack() {
                     ))}
                 </View>
             </ScrollView>
-            <ExerciseReadMenu/>
+            <ReadMenu/>
         </View>
     );
 }

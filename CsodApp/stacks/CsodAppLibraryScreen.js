@@ -23,7 +23,7 @@ const firebaseConfig = {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-export default function CsodAppProgressStack() {
+export default function CsodAppLibraryScreen() {
     const navigation = useNavigation();
 
     const [isModalOpened, setIsModalOpened] = useState(false);
@@ -123,7 +123,7 @@ export default function CsodAppProgressStack() {
     const navigateToExercise = (id, title) => {
         setCurrentlyViewedExercise(title);
         setLastRoute('Read');
-        navigation.navigate('ExerciseRead');
+        navigation.navigate('Read');
     }
     /* endregion */
 

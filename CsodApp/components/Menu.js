@@ -7,7 +7,7 @@ export default function Menu() {
     return (
         <View style={menuStyles.menu}>
             <TouchableOpacity onPress={() => {
-                navigation.navigate('Read')
+                navigation.navigate('Library')
             }}>
                 <Image style={menuStyles.menuItem} source={require('../assets/old/read.png')}></Image>
             </TouchableOpacity>

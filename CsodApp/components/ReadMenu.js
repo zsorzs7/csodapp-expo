@@ -3,7 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useStoreState} from 'easy-peasy';
 
 
-export default function ExerciseReadMenu() {
+export default function ReadMenu() {
     const navigation = useNavigation();
 
     const lastRoute = useStoreState((state) => state.lastRoute);

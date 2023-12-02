@@ -5,10 +5,10 @@ import {SafeAreaProvider} from "react-native-safe-area-context";
 
 /* region Navigation */
 import {NavigationContainer} from '@react-navigation/native';
-import CsodAppReadStack from './stacks/CsodAppReadStack';
-import CsodAppProgressStack from './stacks/CsodAppProgressStack';
-import CsodAppSettingsStack from './stacks/CsodAppSettingsStack';
-import CsodAppExerciseReadStack from './stacks/CsodAppExerciseReadStack';
+import CsodAppLibraryScreen from './stacks/CsodAppLibraryScreen';
+import CsodAppProgressScreen from './stacks/CsodAppProgressScreen';
+import CsodAppSettingsScreen from './stacks/CsodAppSettingsScreen';
+import CsodAppReadScreen from './stacks/CsodAppReadScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 
 const CsodAppStack = createStackNavigator();
@@ -24,15 +24,15 @@ export default function App() {
         <StoreProvider store={store}>
             <SafeAreaProvider>
                 <NavigationContainer>
-                    <CsodAppStack.Navigator initialRouteName="Settings"
+                    <CsodAppStack.Navigator initialRouteName="Progress"
                                             screenOptions={{headerShown: false, cardStyle: {backgroundColor: 'red'}}}>
-                        <CsodAppStack.Screen name="Read" component={CsodAppReadStack}
+                        <CsodAppStack.Screen name="Library" component={CsodAppLibraryScreen}
                                              options={{animationEnabled: false}}/>
-                        <CsodAppStack.Screen name="Progress" component={CsodAppProgressStack}
+                        <CsodAppStack.Screen name="Progress" component={CsodAppProgressScreen}
                                              options={{animationEnabled: false}}/>
-                        <CsodAppStack.Screen name="Settings" component={CsodAppSettingsStack}
+                        <CsodAppStack.Screen name="Settings" component={CsodAppSettingsScreen}
                                              options={{animationEnabled: false}}/>
-                        <CsodAppStack.Screen name="ExerciseRead" component={CsodAppExerciseReadStack}
+                        <CsodAppStack.Screen name="Read" component={CsodAppReadScreen}
                                              options={{animationEnabled: false}}/>
                     </CsodAppStack.Navigator>
                 </NavigationContainer>
