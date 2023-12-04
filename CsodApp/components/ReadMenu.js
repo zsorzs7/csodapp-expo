@@ -9,7 +9,7 @@ export default function ReadMenu() {
     const lastRoute = useStoreState((state) => state.lastRoute);
 
     const navigateToLastRoute = () => {
-        if (navigation.navigate(lastRoute)) ;
+        navigation.navigate(lastRoute);
     }
 
     return (

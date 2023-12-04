@@ -219,7 +219,7 @@ export default function CsodAppSettingsScreen() {
                         Értesítések
                     </Text>
                     <TouchableOpacity style={styles.titleItemText} onPress={async () => {
-                        togglePushNotification();
+                        // togglePushNotification();
                     }}>
                         {pushNotification ?
                             <Image style={{height: 38, width: 66}}
