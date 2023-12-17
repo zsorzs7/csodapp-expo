@@ -245,23 +245,6 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
         paddingLeft: 30,
     },
-    modalBox: {
-        bottom: 0,
-        padding: 20,
-        paddingBottom: 30,
-        width: '100%',
-        backgroundColor: 'white',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 12,
-        },
-        shadowOpacity: 0.58,
-        shadowRadius: 16.00,
-        elevation: 12,
-        borderRadius: 0,
-        position: "absolute"
-    },
     modalText: {
         fontWeight: '700',
         fontSize: 20,
@@ -383,19 +366,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderStyle: 'solid',
     },
-    modalNoButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 10,
-        elevation: 3,
-        borderColor: '#9E99ED',
-        borderWidth: 1,
-        borderStyle: 'solid',
-        backgroundColor: 'white',
-        marginRight: 7
-    },
 // text: {
 //     fontSize: 16,
 //     lineHeight: 21,
@@ -441,10 +411,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-    },
     modalBox: {
         bottom: 0,
         padding: 30,
@@ -462,41 +428,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         position: "absolute"
     },
-    modalText: {
-        fontWeight: '700',
-        fontSize: 20,
-        textAlign: 'center',
-        marginBottom: 10,
-        color: 'black',
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 10,
-        elevation: 3,
-        backgroundColor: '#9E99ED',
-    },
-    modalButtonContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginTop: 10,
-        justifyContent: 'center'
-    },
-    modalYesButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 10,
-        elevation: 3,
-        backgroundColor: '#9E99ED',
-        marginLeft: 7,
-        borderColor: '#9E99ED',
-        borderWidth: 1,
-        borderStyle: 'solid',
-    },
     modalNoButton: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -509,19 +440,5 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         backgroundColor: 'white',
         marginRight: 7
-    },
-    text: {
-        fontSize: 16,
-        lineHeight: 21,
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        color: 'white',
-    },
-    textNoButton: {
-        fontSize: 16,
-        lineHeight: 21,
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        color: '#9E99ED',
     }
 });

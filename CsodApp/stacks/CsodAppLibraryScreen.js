@@ -122,7 +122,7 @@ export default function CsodAppLibraryScreen() {
 
     const navigateToExercise = (id, title) => {
         setCurrentlyViewedExercise(title);
-        setLastRoute('Read');
+        setLastRoute('Library');
         navigation.navigate('Read');
     }
     /* endregion */

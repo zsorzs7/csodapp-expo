@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/old/aclogo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.csodapp"
     },
     "web": {
       "favicon": "./assets/old/aclogo.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "670c870d-c0d4-4449-b751-329ecc08c6eb"
+      }
+    },
+    "owner": "csodapp"
   }
 }

@@ -18,6 +18,7 @@ import {
 import {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useStoreState, useStoreActions} from 'easy-peasy';
+import { Timer } from '../components/Timer';
 
 /* endregion */
 
@@ -220,9 +221,10 @@ export default function CsodAppProgressScreen() {
                         }}>
                             <Image style={styles.smallIcon} source={require('../assets/old/next.png')}></Image>
                         </TouchableOpacity>
-                    }
+                    }    
                 </View>
                 {/* endregion */}
+                <Timer></Timer>
 
             </ScrollView>
             {/* endregion */}

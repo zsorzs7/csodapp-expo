@@ -17,17 +17,24 @@ export default createStore(
         /* endregion */
 
         /* region Navigation */
-        lastRoute: 'read',
+        lastRoute: 'Read',
         setLastRoute: action((state, route) => {
             state.lastRoute = route;
         }),
         /* endregion */
 
         /* region Daily Progress */
-        dailyProgress: 0,
-        setDailyProgress: action((state, progress) => {
-            state.dailyProgress = progress;
+        doneExercisesToday: 0,
+        addDoneExercise: action((state) => {
+            state.doneExercisesToday += 1;
+        }),
+        resetDoneExercisesToday: action((state) => {
+            state.doneExercisesToday = 0;
+        }),
+        setDoneExercisesToday: action((state, number) => {
+            state.doneExercisesToday = number;
         }),
         /* endregion */
+        
     })
 );
