@@ -4,8 +4,8 @@ export default createStore(
     persist({
         /* region Exercises */
         exercises: [],
-        setExercises: action((state, exercise) => {
-            state.currentlyViewedExercise = exercise;
+        setExercises: action((state, exercises) => {
+            state.exercises = exercises;
         }),
         /* endregion */
 
@@ -35,6 +35,6 @@ export default createStore(
             state.doneExercisesToday = number;
         }),
         /* endregion */
-        
+
     })
 );

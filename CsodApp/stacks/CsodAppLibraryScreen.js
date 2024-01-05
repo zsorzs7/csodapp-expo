@@ -1,120 +1,13 @@
-import React, {useState, useEffect} from "react";
-import {View, StyleSheet, Text, ScrollView, Pressable, Image} from "react-native";
+import React from "react";
+import {View, StyleSheet, Text, ScrollView, Pressable, Image, FlatList} from "react-native";
 import {useStoreState, useStoreActions} from "easy-peasy";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import Menu from "../components/Menu";
 
-import {initializeApp} from "firebase/app";
-import {getFirestore, collection, getDocs, query} from "firebase/firestore";
 import {useNavigation} from '@react-navigation/native';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDDvcz0oGtL8gFQq0OSidN_BjQINIOj3vg",
-    authDomain: "csodapp-471f4.firebaseapp.com",
-    projectId: "csodapp-471f4",
-    storageBucket: "csodapp-471f4.appspot.com",
-    messagingSenderId: "41075695763",
-    appId: "1:41075695763:web:a7973be2a4d290eca06d66",
-    measurementId: "G-8B1367S9RM"
-};
-/* endregion */
-
-/* region Progress */
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 export default function CsodAppLibraryScreen() {
     const navigation = useNavigation();
-
-    const [isModalOpened, setIsModalOpened] = useState(false);
-
-    /* region Exercises */
-    const [exercises, setExercises] = useState([]);
-
-    fetchExercises = async () => {
-        try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const table = collection(db, "420");
-            const titleCollection = await getDocs(table);
-            const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
-            exercisesFromFirebase.map((title, idx) => (title.index = idx));
-            setExercises(exercisesFromFirebase);
-            setExercisesToAsyncStorage(exercisesFromFirebase);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    /* endregion */
-
-    /* region Progress */
-    const [progress, setProgress] = useState(0);
-    const [viewed, setViewed] = useState(0);
-
-    /* region Async Storage */
-    setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
-        try {
-            await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-    getExercisesFromAsyncStorage = async () => {
-        try {
-            const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
-            if (exercisesFromAsyncStorage !== null) {
-                setExercises(JSON.parse(exercisesFromAsyncStorage));
-            } else {
-                fetchExercises();
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-    setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
-        try {
-            setProgress(progress);
-            setIsModalOpened(false);
-            if (isSetViewed) {
-                setViewed(progress);
-            }
-            await AsyncStorage.setItem(
-                'progress',
-                `${progress}`
-            );
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    getProgressFromAsyncStorage = async () => {
-        try {
-            const progress = await AsyncStorage.getItem('progress');
-            if (progress !== null) {
-                setProgress(parseInt(progress));
-                setViewed(parseInt(progress));
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    /* endregion */
-
-    /* region Viewed */
-    viewPrevious = () => {
-        if (viewed > 0) {
-            setViewed(viewed - 1);
-        }
-    }
-
-    viewNext = () => {
-        setViewed(viewed + 1);
-    }
-    /* endregion */
 
     /* region Navigate */
     const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
@@ -127,10 +20,9 @@ export default function CsodAppLibraryScreen() {
     }
     /* endregion */
 
-    useEffect(() => {
-        getExercisesFromAsyncStorage();
-        getProgressFromAsyncStorage();
-    }, []);
+    /* region Exercises */
+    const exercises =  useStoreState(state => state.exercises);
+    /* endregion */
 
     return (
         <View style={styles.container}>
@@ -204,10 +96,6 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
         paddingLeft: 30
     },
-    menuItem: {
-        height: 40,
-        width: 37
-    },
     container: {
         flex: 1,
         paddingTop: 30,
@@ -216,29 +104,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9F9F9',
         height: '100%',
         alignSelf: "stretch"
-    },
-    scrollContainer: {
-        flex: 1,
-        paddingTop: 30,
-        flexDirection: 'column',
-        alignItems: 'center',
-        backgroundColor: '#F9F9F9',
-        alignSelf: "stretch"
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 10,
-        elevation: 3,
-        backgroundColor: '#9E99ED',
-    },
-    text: {
-        fontSize: 16,
-        lineHeight: 21,
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        color: 'white',
-    },
+    }
 });

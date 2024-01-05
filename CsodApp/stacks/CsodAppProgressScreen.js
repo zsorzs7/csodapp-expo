@@ -47,6 +47,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function CsodAppProgressScreen() {
     const navigation = useNavigation();
 
+    const setExercisesToStore = useStoreActions((actions) => actions.setExercises);
+
+    const exercisesFromStore = useStoreState((state) => state.exercises);
+
     const [isModalOpened, setIsModalOpened] = useState(false);
 
     /* region Exercises */
@@ -59,9 +63,9 @@ export default function CsodAppProgressScreen() {
             const table = collection(db, "420");
             const titleCollection = await getDocs(table);
             const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
-            exercisesFromFirebase.map((title, idx) => (title.index = idx));
             setExercises(exercisesFromFirebase);
             setExercisesToAsyncStorage(exercisesFromFirebase);
+            setExercisesToStore(JSON.parse(exercisesFromFirebase));
         } catch (error) {
             console.log(error);
         }
@@ -87,6 +91,7 @@ export default function CsodAppProgressScreen() {
             const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
             if (exercisesFromAsyncStorage !== null) {
                 setExercises(JSON.parse(exercisesFromAsyncStorage));
+                setExercisesToStore(JSON.parse(exercisesFromAsyncStorage));
             } else {
                 fetchExercises();
             }
