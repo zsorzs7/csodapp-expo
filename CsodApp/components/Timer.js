@@ -26,7 +26,7 @@ export const Timer = () => {
             setStateDoneExercises(JSON.parse(doneExercisesToday));
         } else {
             await setDoneExercisesAsyncStorage(0);
-            setStateDoneExercises(0);        
+            setStateDoneExercises(0);
         }
     }
 
@@ -61,7 +61,7 @@ export const Timer = () => {
         }
     }
 
-    return (<View style={[styles.timer, {height: screenHeight / 2}]}>
+    return (<View style={[styles.timer]}>
         <View style={{backgroundColor: 'white', borderRadius: 100, padding: 10, elevation: 0.5}}>
             <View style={{borderRadius: 100, padding: 0, borderWidth: 0, borderStyle: 'dashed'}}>
                 <CountdownCircleTimer
@@ -117,7 +117,7 @@ export const Timer = () => {
 const styles = StyleSheet.create({
     timerInside: {
         height: 143,
-        width: 143,
+        width: 123,
         backgroundColor: 'white',
         borderRadius: 100,
         alignItems: 'center',
@@ -138,7 +138,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: "center",
+        justifyContent: 'center',
+        borderRadius: 20
     },
     checkboxContainer: {
         flex: 1,
