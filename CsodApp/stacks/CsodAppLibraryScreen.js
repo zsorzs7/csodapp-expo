@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {View, StyleSheet, Text, ScrollView, Pressable, Image, FlatList} from "react-native";
 import {useStoreState, useStoreActions} from "easy-peasy";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -27,23 +27,24 @@ export default function CsodAppLibraryScreen() {
     return (
         <View style={styles.container}>
             <Text style={styles.screenTitle}>Könyvtár</Text>
-            <ScrollView>
-                <View style={styles.pageContent}>
-                    {exercises.map((title, idx) => (
-                        title.index >= 0 ?
-                            <TouchableOpacity key={idx + title} onPress={() => {
-                                navigateToExercise(idx, exercises[idx])
-                            }}
-                                              style={(idx === exercises.length - 1) ? styles.borderlessTitleContainer : styles.titleContainer}>
-                                <Text style={styles.titleItemId}>
-                                    {title.index + 1}.
-                                </Text>
-                                <Text style={styles.titleItemText}>
-                                    {title.title}
-                                </Text>
-                            </TouchableOpacity> : <Text></Text>))}
-                </View>
-            </ScrollView>
+                <FlatList
+                    data={exercises}
+                    renderItem={({item}) => (
+                        <TouchableOpacity key={item.index}
+                                          style={styles.titleContainer}
+                                          onPress={() => {
+                                              navigateToExercise(item.index, exercises[item.index])
+                                          }}>
+                            <Text style={styles.titleItemId}>
+                                {item.index + 1}.
+                            </Text>
+                            <Text style={styles.titleItemText}>
+                                {item.title}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                    style={styles.exercisesList}
+                />
             <Menu/>
         </View>
     );
@@ -103,6 +104,11 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         backgroundColor: '#F9F9F9',
         height: '100%',
-        alignSelf: "stretch"
+        alignSelf: "stretch",
+        paddingBottom: 90
+    },
+    exercisesList: {
+        width: '100%',
+        padding: 20
     }
 });

@@ -147,6 +147,8 @@ export default function CsodAppSettingsScreen() {
         getProgressFromAsyncStorage();
     }, []);
 
+    const setUserProgress = useStoreActions((actions) => actions.setUserProgress);
+
     return (
         <View style={styles.container}>
             {/* region Modal */}
@@ -167,6 +169,7 @@ export default function CsodAppSettingsScreen() {
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.modalYesButton} onPress={() => {
                                     setProgressToAsyncStorage(continueFrom);
+                                    setUserProgress(continueFrom);
                                 }}>
                                     <Text style={styles.text}>Igen</Text>
                                 </TouchableOpacity>

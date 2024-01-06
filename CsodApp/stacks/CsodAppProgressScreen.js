@@ -51,6 +51,11 @@ export default function CsodAppProgressScreen() {
 
     const exercisesFromStore = useStoreState((state) => state.exercises);
 
+    /* region Exercises */
+    const userProgress =  useStoreState(state => state.userProgress);
+    /* endregion */
+
+
     const [isModalOpened, setIsModalOpened] = useState(false);
 
     /* region Exercises */
@@ -156,7 +161,7 @@ export default function CsodAppProgressScreen() {
     useEffect(() => {
         getExercisesFromAsyncStorage();
         getProgressFromAsyncStorage();
-    }, []);
+    }, [userProgress]);
 
     return (
         <View style={styles.container}>

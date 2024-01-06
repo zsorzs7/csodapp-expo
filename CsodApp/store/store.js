@@ -9,6 +9,13 @@ export default createStore(
         }),
         /* endregion */
 
+        /* region Exercises */
+        userProgress: 0,
+        setUserProgress: action((state, userProgress) => {
+            state.userProgress = userProgress;
+        }),
+        /* endregion */
+
         /* region Progress */
         currentlyViewedExercise: {},
         setCurrentlyViewedExercise: action((state, exercise) => {
