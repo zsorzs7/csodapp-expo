@@ -61,11 +61,13 @@ export const Timer = () => {
         }
     }
 
+    const [duration, setDuration] = useState(900);
+
     return (<View style={[styles.timer]}>
         <View style={{backgroundColor: 'white', borderRadius: 100, padding: 10, elevation: 0.5}}>
             <View style={{borderRadius: 100, padding: 0, borderWidth: 0, borderStyle: 'dashed'}}>
                 <CountdownCircleTimer
-                    key={hasPlayed}
+                    key={duration}
                     isPlaying={isPlaying}
                     duration={900}
                     colors={['#9E99ED', '#F7C4D5']}
@@ -83,7 +85,8 @@ export const Timer = () => {
                     {({remainingTime}) => <View style={styles.timerInside}>
                         {isPlaying ?
                             <TouchableOpacity style={{height: 40}} onPress={() => {
-                                setIsPlaying(false)
+                                setIsPlaying(false);
+                                setDuration(remainingTime);
                             }}>
                                 <Image style={{height: 36.73, width: 36}}
                                        source={require('../assets/old/stop.png')}></Image>
