@@ -161,7 +161,15 @@ export default function CsodAppProgressScreen() {
     useEffect(() => {
         getExercisesFromAsyncStorage();
         getProgressFromAsyncStorage();
-    }, [userProgress]);
+    }, []);
+
+    useEffect(() => {
+        setProgress(userProgress);
+        setViewed(userProgress);
+    },[userProgress]);
+
+    // setProgress(userProgress);
+    // setViewed(userProgress);
 
     return (
         <View style={styles.container}>

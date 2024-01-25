@@ -67,7 +67,7 @@ export const Timer = () => {
                 <CountdownCircleTimer
                     key={hasPlayed}
                     isPlaying={isPlaying}
-                    duration={600}
+                    duration={900}
                     colors={['#9E99ED', '#F7C4D5']}
                     strokeWidth={18}
                     trailColor={'white'}
@@ -101,16 +101,16 @@ export const Timer = () => {
                 </CountdownCircleTimer>
             </View>
         </View>
-        <View style={styles.checkboxContainer}>
-            {[1, 2, 3, 4, 5].map((todo, idx) => (
-                idx + 1 <= doneExercisesToday ?
-                    <Image style={styles.checkbox} key={idx} source={require('../assets/old/checkbox-checked.png')}></Image>
-                    :
-                    <TouchableOpacity key={idx} onPress={() => stepUpToday()}>
-                        <Image style={styles.checkbox} source={require('../assets/old/checkbox.png')}></Image>
-                    </TouchableOpacity>
-            ))}
-        </View>
+        {/*<View style={styles.checkboxContainer}>*/}
+        {/*    {[1, 2, 3, 4, 5].map((todo, idx) => (*/}
+        {/*        idx + 1 <= doneExercisesToday ?*/}
+        {/*            <Image style={styles.checkbox} key={idx} source={require('../assets/old/checkbox-checked.png')}></Image>*/}
+        {/*            :*/}
+        {/*            <TouchableOpacity key={idx} onPress={() => stepUpToday()}>*/}
+        {/*                <Image style={styles.checkbox} source={require('../assets/old/checkbox.png')}></Image>*/}
+        {/*            </TouchableOpacity>*/}
+        {/*    ))}*/}
+        {/*</View>*/}
     </View>);
 };
 
