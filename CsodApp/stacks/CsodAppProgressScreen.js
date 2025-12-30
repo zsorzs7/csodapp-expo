@@ -61,7 +61,7 @@ export default function CsodAppProgressScreen() {
     /* region Exercises */
     const [exercises, setExercises] = useState([]);
 
-    fetchExercises = async () => {
+    const fetchExercises = async () => {
         try {
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -70,7 +70,7 @@ export default function CsodAppProgressScreen() {
             const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
             setExercises(exercisesFromFirebase);
             setExercisesToAsyncStorage(exercisesFromFirebase);
-            setExercisesToStore(JSON.parse(exercisesFromFirebase));
+            setExercisesToStore(exercisesFromFirebase);
         } catch (error) {
             console.log(error);
         }
@@ -82,7 +82,7 @@ export default function CsodAppProgressScreen() {
     const [viewed, setViewed] = useState(0);
 
     /* region Async Storage */
-    setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
+    const setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
         try {
             await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
         } catch (error) {
@@ -91,7 +91,7 @@ export default function CsodAppProgressScreen() {
     }
 
 
-    getExercisesFromAsyncStorage = async () => {
+    const getExercisesFromAsyncStorage = async () => {
         try {
             const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
             if (exercisesFromAsyncStorage !== null) {
@@ -106,7 +106,7 @@ export default function CsodAppProgressScreen() {
     }
 
 
-    setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
+    const setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
         try {
             setProgress(progress);
             setIsModalOpened(false);
@@ -122,7 +122,7 @@ export default function CsodAppProgressScreen() {
         }
     };
 
-    getProgressFromAsyncStorage = async () => {
+    const getProgressFromAsyncStorage = async () => {
         try {
             const progress = await AsyncStorage.getItem('progress');
             if (progress !== null) {
@@ -136,13 +136,13 @@ export default function CsodAppProgressScreen() {
     /* endregion */
 
     /* region Viewed */
-    viewPrevious = () => {
+    const viewPrevious = () => {
         if (viewed > 0) {
             setViewed(viewed - 1);
         }
     }
 
-    viewNext = () => {
+    const viewNext = () => {
         setViewed(viewed + 1);
     }
     /* endregion */
@@ -210,7 +210,7 @@ export default function CsodAppProgressScreen() {
                 paddingTop: 60,
                 paddingLeft: 20,
                 paddingRight: 20
-            }} contentInset={{top: 200, left: 0, bottom: 0, right: 0}}>
+            }}>
                 <Text style={styles.progressId}>{viewed + 1}. GYAKORLAT</Text>
                 <Text style={styles.progressText}>{exercises[viewed]?.title || 'Szentségem megáldja a világot.'}</Text>
 

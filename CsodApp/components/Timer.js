@@ -57,7 +57,7 @@ export const Timer = () => {
             await AsyncStorage.setItem('doneExercisesToday', JSON.stringify(number));
         }
         catch(e){
-            console.log(error);
+            console.log(e);
         }
     }
 

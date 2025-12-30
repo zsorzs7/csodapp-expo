@@ -52,7 +52,7 @@ export default function CsodAppSettingsScreen() {
     /* region Exercises */
     const [exercises, setExercises] = useState([]);
 
-    fetchExercises = async () => {
+    const fetchExercises = async () => {
         try {
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -73,7 +73,7 @@ export default function CsodAppSettingsScreen() {
     const [viewed, setViewed] = useState(0);
 
     /* region Async Storage */
-    setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
+    const setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
         try {
             await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
         } catch (error) {
@@ -82,7 +82,7 @@ export default function CsodAppSettingsScreen() {
     }
 
 
-    getExercisesFromAsyncStorage = async () => {
+    const getExercisesFromAsyncStorage = async () => {
         try {
             const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
             if (exercisesFromAsyncStorage !== null) {
@@ -96,7 +96,7 @@ export default function CsodAppSettingsScreen() {
     }
 
 
-    setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
+    const setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
         try {
             setProgress(progress);
             setIsModalOpened(false);
@@ -112,7 +112,7 @@ export default function CsodAppSettingsScreen() {
         }
     };
 
-    getProgressFromAsyncStorage = async () => {
+    const getProgressFromAsyncStorage = async () => {
         try {
             const progress = await AsyncStorage.getItem('progress');
             if (progress !== null) {
@@ -126,13 +126,13 @@ export default function CsodAppSettingsScreen() {
     /* endregion */
 
     /* region Viewed */
-    viewPrevious = () => {
+    const viewPrevious = () => {
         if (viewed > 0) {
             setViewed(viewed - 1);
         }
     }
 
-    viewNext = () => {
+    const viewNext = () => {
         setViewed(viewed + 1);
     }
     /* endregion */
@@ -190,7 +190,7 @@ export default function CsodAppSettingsScreen() {
                 paddingTop: 60,
                 paddingLeft: 20,
                 paddingRight: 20
-            }} contentInset={{top: 200, left: 0, bottom: 0, right: 0}}>
+            }}>
                 <View style={[styles.titleContainer]}>
                     <Text style={styles.titleItemText}>
                         Aktuális gyakorlat
