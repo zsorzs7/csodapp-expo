@@ -22,19 +22,8 @@ import {Timer} from '../components/Timer';
 
 /* endregion */
 
-/* region FireStore */
-import {initializeApp} from "firebase/app";
-import {getFirestore, collection, getDocs, query} from "firebase/firestore";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDDvcz0oGtL8gFQq0OSidN_BjQINIOj3vg",
-    authDomain: "csodapp-471f4.firebaseapp.com",
-    projectId: "csodapp-471f4",
-    storageBucket: "csodapp-471f4.appspot.com",
-    messagingSenderId: "41075695763",
-    appId: "1:41075695763:web:a7973be2a4d290eca06d66",
-    measurementId: "G-8B1367S9RM"
-};
+/* region Exercises Data */
+const exercisesData = require('../data/exercises.json');
 /* endregion */
 
 const screenWidth = Dimensions.get('window').width;
@@ -61,19 +50,23 @@ export default function CsodAppProgressScreen() {
     /* region Exercises */
     const [exercises, setExercises] = useState([]);
 
-    const fetchExercises = async () => {
+    const loadExercises = () => {
         try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const table = collection(db, "420");
-            const titleCollection = await getDocs(table);
-            const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
-            setExercises(exercisesFromFirebase);
-            setExercisesToAsyncStorage(exercisesFromFirebase);
-            setExercisesToStore(exercisesFromFirebase);
+            // Load exercises from JSON file
+            const exercisesFromJson = exercisesData.map((exercise) => ({
+                ...exercise,
+                index: exercise.index !== undefined ? parseInt(exercise.index) : 0
+            }));
+            setExercises(exercisesFromJson);
+            setExercisesToStore(exercisesFromJson);
         } catch (error) {
-            console.log(error);
+            console.log('Error loading exercises:', error);
         }
+    };
+
+    // Helper function to find exercise by index
+    const getExerciseByIndex = (index) => {
+        return exercises.find(ex => ex.index === index) || null;
     };
     /* endregion */
 
@@ -82,68 +75,103 @@ export default function CsodAppProgressScreen() {
     const [viewed, setViewed] = useState(0);
 
     /* region Async Storage */
-    const setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
+    // Only store current exercise index, not all exercises
+    const setCurrentExerciseIndex = async (index) => {
         try {
-            await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
+            await AsyncStorage.setItem('currentExerciseIndex', `${index}`);
         } catch (error) {
-            console.log(error);
+            console.log('Error saving current exercise index:', error);
         }
     }
 
-
-    const getExercisesFromAsyncStorage = async () => {
+    const getCurrentExerciseIndex = async () => {
         try {
-            const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
-            if (exercisesFromAsyncStorage !== null) {
-                setExercises(JSON.parse(exercisesFromAsyncStorage));
-                setExercisesToStore(JSON.parse(exercisesFromAsyncStorage));
-            } else {
-                fetchExercises();
+            const index = await AsyncStorage.getItem('currentExerciseIndex');
+            if (index !== null) {
+                return parseInt(index);
             }
+            return 0;
         } catch (error) {
-            console.log(error);
+            console.log('Error getting current exercise index:', error);
+            return 0;
         }
     }
 
 
-    const setProgressToAsyncStorage = async (progress, isSetViewed = true) => {
+    const setProgressToAsyncStorage = async (newProgress, isSetViewed = true) => {
         try {
-            setProgress(progress);
+            // Find the next exercise by index
+            const currentExercise = getExerciseByIndex(progress);
+            let nextIndex = newProgress;
+            if (currentExercise) {
+                const nextExercise = getExerciseByIndex(currentExercise.index + 1);
+                if (nextExercise) {
+                    nextIndex = nextExercise.index;
+                }
+            }
+            
+            setProgress(nextIndex);
             setIsModalOpened(false);
             if (isSetViewed) {
-                setViewed(progress);
+                setViewed(nextIndex);
             }
-            await AsyncStorage.setItem(
-                'progress',
-                `${progress}`
-            );
+            await AsyncStorage.setItem('progress', `${nextIndex}`);
+            // Also save current exercise index
+            await setCurrentExerciseIndex(nextIndex);
         } catch (error) {
-            console.log(error);
+            console.log('Error saving progress:', error);
         }
     };
 
     const getProgressFromAsyncStorage = async () => {
         try {
-            const progress = await AsyncStorage.getItem('progress');
-            if (progress !== null) {
-                setProgress(parseInt(progress));
-                setViewed(parseInt(progress));
+            const savedProgress = await AsyncStorage.getItem('progress');
+            if (savedProgress !== null) {
+                const progressIndex = parseInt(savedProgress);
+                // Verify the exercise exists
+                const progressExercise = exercises.find(ex => ex.index === progressIndex);
+                if (progressExercise) {
+                    setProgress(progressIndex);
+                    setViewed(progressIndex);
+                } else if (exercises.length > 0) {
+                    // If saved progress doesn't exist, use first exercise
+                    const firstExercise = exercises[0];
+                    setProgress(firstExercise.index);
+                    setViewed(firstExercise.index);
+                }
+            } else if (exercises.length > 0) {
+                // No saved progress, use first exercise
+                const firstExercise = exercises[0];
+                setProgress(firstExercise.index);
+                setViewed(firstExercise.index);
             }
         } catch (error) {
-            console.log(error);
+            console.log('Error loading progress:', error);
         }
     };
     /* endregion */
 
     /* region Viewed */
     const viewPrevious = () => {
-        if (viewed > 0) {
-            setViewed(viewed - 1);
+        const currentExercise = getExerciseByIndex(viewed);
+        if (currentExercise) {
+            const prevIndex = currentExercise.index - 1;
+            const prevExercise = getExerciseByIndex(prevIndex);
+            if (prevExercise) {
+                setViewed(prevIndex);
+            }
         }
     }
 
     const viewNext = () => {
-        setViewed(viewed + 1);
+        const currentExercise = getExerciseByIndex(viewed);
+        if (currentExercise) {
+            const nextIndex = currentExercise.index + 1;
+            const nextExercise = getExerciseByIndex(nextIndex);
+            if (nextExercise) {
+                setViewed(nextIndex);
+            }
+        }
     }
     /* endregion */
 
@@ -151,22 +179,36 @@ export default function CsodAppProgressScreen() {
     const setLastRoute = useStoreActions((actions) => actions.setLastRoute);
     const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
 
-    const navigateToExercise = (id, title) => {
-        setCurrentlyViewedExercise(title);
-        setLastRoute('Progress');
-        navigation.navigate('Read');
+    const navigateToExercise = (index) => {
+        const exercise = getExerciseByIndex(index);
+        if (exercise) {
+            setCurrentlyViewedExercise(exercise);
+            setLastRoute('Progress');
+            navigation.navigate('Read');
+        }
     }
     /* endregion */
 
     useEffect(() => {
-        getExercisesFromAsyncStorage();
-        getProgressFromAsyncStorage();
+        loadExercises();
     }, []);
 
+    // Load progress after exercises are loaded
     useEffect(() => {
-        setProgress(userProgress);
-        setViewed(userProgress);
-    },[userProgress]);
+        if (exercises.length > 0) {
+            getProgressFromAsyncStorage();
+        }
+    }, [exercises]);
+
+    useEffect(() => {
+        if (userProgress > 0) {
+            const exercise = getExerciseByIndex(userProgress);
+            if (exercise) {
+                setProgress(exercise.index);
+                setViewed(exercise.index);
+            }
+        }
+    },[userProgress, exercises]);
 
     // setProgress(userProgress);
     // setViewed(userProgress);
@@ -211,36 +253,55 @@ export default function CsodAppProgressScreen() {
                 paddingLeft: 20,
                 paddingRight: 20
             }}>
-                <Text style={styles.progressId}>{viewed + 1}. GYAKORLAT</Text>
-                <Text style={styles.progressText}>{exercises[viewed]?.title || 'Szentségem megáldja a világot.'}</Text>
+                {(() => {
+                    const currentExercise = getExerciseByIndex(viewed);
+                    return (
+                        <>
+                            <Text style={styles.progressId}>{currentExercise ? currentExercise.index : viewed}. GYAKORLAT</Text>
+                            <Text style={styles.progressText}>{currentExercise?.title || 'Szentségem megáldja a világot.'}</Text>
 
-                {/* region Actions */}
-                <View style={styles.progressIcons}>
-                    <TouchableOpacity onPress={() => {
-                        viewPrevious();
-                    }}>
-                        <Image style={styles.smallIcon} source={require('../assets/old/back.png')}></Image>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {
-                        navigateToExercise(viewed, exercises[viewed]);
-                    }}>
-                        <Image style={styles.bigIcon} source={require('../assets/old/expand.png')}></Image>
-                    </TouchableOpacity>
-                    {progress > viewed &&
-                        <TouchableOpacity onPress={() => {
-                            viewNext();
-                        }}>
-                            <Image style={styles.smallIcon} source={require('../assets/old/view-next.png')}></Image>
-                        </TouchableOpacity>
-                    }
-                    {progress === viewed &&
-                        <TouchableOpacity onPress={() => {
-                            setIsModalOpened(true);
-                        }}>
-                            <Image style={styles.smallIcon} source={require('../assets/old/next.png')}></Image>
-                        </TouchableOpacity>
-                    }
-                </View>
+                            {/* region Actions */}
+                            <View style={styles.progressIcons}>
+                                <TouchableOpacity onPress={() => {
+                                    viewPrevious();
+                                }}>
+                                    <Image style={styles.smallIcon} source={require('../assets/old/back.png')}></Image>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {
+                                    navigateToExercise(viewed);
+                                }}>
+                                    <Image style={styles.bigIcon} source={require('../assets/old/expand.png')}></Image>
+                                </TouchableOpacity>
+                                {(() => {
+                                    const currentExercise = getExerciseByIndex(viewed);
+                                    const progressExercise = getExerciseByIndex(progress);
+                                    const canViewNext = progressExercise && currentExercise && progressExercise.index > currentExercise.index;
+                                    const isAtCurrent = progressExercise && currentExercise && progressExercise.index === currentExercise.index;
+                                    
+                                    if (canViewNext) {
+                                        return (
+                                            <TouchableOpacity onPress={() => {
+                                                viewNext();
+                                            }}>
+                                                <Image style={styles.smallIcon} source={require('../assets/old/view-next.png')}></Image>
+                                            </TouchableOpacity>
+                                        );
+                                    }
+                                    if (isAtCurrent) {
+                                        return (
+                                            <TouchableOpacity onPress={() => {
+                                                setIsModalOpened(true);
+                                            }}>
+                                                <Image style={styles.smallIcon} source={require('../assets/old/next.png')}></Image>
+                                            </TouchableOpacity>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+                            </View>
+                        </>
+                    );
+                })()}
                 {/* endregion */}
                 <Timer></Timer>
 

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {View, StyleSheet, Text, Image} from "react-native";
 import {useStoreState, useStoreActions} from "easy-peasy";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -61,15 +61,37 @@ export const Timer = () => {
         }
     }
 
-    const [duration, setDuration] = useState(900);
+    const [remainingTime, setRemainingTime] = useState(600); // 10 minutes in seconds
+    const [timerKey, setTimerKey] = useState(0);
+    const [shouldPlay, setShouldPlay] = useState(false);
+
+    // Effect to handle play state after key change
+    useEffect(() => {
+        if (shouldPlay) {
+            setIsPlaying(true);
+            setShouldPlay(false);
+        }
+    }, [timerKey, shouldPlay]);
+
+    const handlePlay = () => {
+        // Save current remaining time, update key, then set shouldPlay
+        setTimerKey(prev => prev + 1);
+        setShouldPlay(true);
+    };
+
+    const handlePause = (currentTime) => {
+        setIsPlaying(false);
+        setRemainingTime(currentTime);
+    };
 
     return (<View style={[styles.timer]}>
         <View style={{backgroundColor: 'white', borderRadius: 100, padding: 10, elevation: 0.5}}>
             <View style={{borderRadius: 100, padding: 0, borderWidth: 0, borderStyle: 'dashed'}}>
                 <CountdownCircleTimer
-                    key={duration}
+                    key={`timer-${timerKey}`}
                     isPlaying={isPlaying}
-                    duration={900}
+                    duration={600}
+                    initialRemainingTime={remainingTime}
                     colors={['#9E99ED', '#F7C4D5']}
                     strokeWidth={18}
                     trailColor={'white'}
@@ -79,27 +101,29 @@ export const Timer = () => {
                         setHasPlayed(hasPlayed + 1);
                         stepUpToday();
                         playSound();
+                        setRemainingTime(600); // Reset to 10 minutes
+                        setTimerKey(prev => prev + 1); // Force timer reset
                         return {shouldRepeat: true, delay: 1.5}
                     }}
+                    onUpdate={(time) => {
+                        setRemainingTime(time);
+                    }}
                 >
-                    {({remainingTime}) => <View style={styles.timerInside}>
+                    {({remainingTime: displayTime}) => <View style={styles.timerInside}>
                         {isPlaying ?
                             <TouchableOpacity style={{height: 40}} onPress={() => {
-                                setIsPlaying(false);
-                                setDuration(remainingTime);
+                                handlePause(displayTime);
                             }}>
                                 <Image style={{height: 36.73, width: 36}}
                                        source={require('../assets/old/stop.png')}></Image>
                             </TouchableOpacity> :
-                            <TouchableOpacity style={{height: 40}} onPress={() => {
-                                setIsPlaying(true)
-                            }}>
+                            <TouchableOpacity style={{height: 40}} onPress={handlePlay}>
                                 <Image style={{height: 39.73, width: 36}}
                                        source={require('../assets/old/start.png')}></Image>
                             </TouchableOpacity>}
-                        <Text style={styles.timerInsideTime}>{Math.floor(remainingTime / 60)}
-                            :{remainingTime - Math.floor(remainingTime / 60) * 60 < 10 ? '0' : ''}
-                            {remainingTime - Math.floor(remainingTime / 60) * 60}</Text>
+                        <Text style={styles.timerInsideTime}>{Math.floor(displayTime / 60)}
+                            :{displayTime - Math.floor(displayTime / 60) * 60 < 10 ? '0' : ''}
+                            {displayTime - Math.floor(displayTime / 60) * 60}</Text>
                     </View>}
                 </CountdownCircleTimer>
             </View>

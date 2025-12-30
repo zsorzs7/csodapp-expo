@@ -22,19 +22,8 @@ import {useStoreState, useStoreActions} from 'easy-peasy';
 
 /* endregion */
 
-/* region FireStore */
-import {initializeApp} from "firebase/app";
-import {getFirestore, collection, getDocs, query} from "firebase/firestore";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDDvcz0oGtL8gFQq0OSidN_BjQINIOj3vg",
-    authDomain: "csodapp-471f4.firebaseapp.com",
-    projectId: "csodapp-471f4",
-    storageBucket: "csodapp-471f4.appspot.com",
-    messagingSenderId: "41075695763",
-    appId: "1:41075695763:web:a7973be2a4d290eca06d66",
-    measurementId: "G-8B1367S9RM"
-};
+/* region Exercises Data */
+const exercisesData = require('../data/exercises.json');
 /* endregion */
 
 const screenWidth = Dimensions.get('window').width;
@@ -52,19 +41,22 @@ export default function CsodAppSettingsScreen() {
     /* region Exercises */
     const [exercises, setExercises] = useState([]);
 
-    const fetchExercises = async () => {
+    const loadExercises = () => {
         try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const table = collection(db, "420");
-            const titleCollection = await getDocs(table);
-            const exercisesFromFirebase = titleCollection.docs.map((doc) => doc.data());
-            exercisesFromFirebase.map((title, idx) => (title.index = idx));
-            setExercises(exercisesFromFirebase);
-            setExercisesToAsyncStorage(exercisesFromFirebase);
+            // Load exercises from JSON file
+            const exercisesFromJson = exercisesData.map((exercise) => ({
+                ...exercise,
+                index: exercise.index !== undefined ? parseInt(exercise.index) : 0
+            }));
+            setExercises(exercisesFromJson);
         } catch (error) {
-            console.log(error);
+            console.log('Error loading exercises:', error);
         }
+    };
+
+    // Helper function to find exercise by index
+    const getExerciseByIndex = (index) => {
+        return exercises.find(ex => ex.index === index) || null;
     };
     /* endregion */
 
@@ -73,25 +65,12 @@ export default function CsodAppSettingsScreen() {
     const [viewed, setViewed] = useState(0);
 
     /* region Async Storage */
-    const setExercisesToAsyncStorage = async (exercisesToAsyncStorage) => {
+    // Only store current exercise index, not all exercises
+    const setCurrentExerciseIndex = async (index) => {
         try {
-            await AsyncStorage.setItem('exercises', JSON.stringify(exercisesToAsyncStorage));
+            await AsyncStorage.setItem('currentExerciseIndex', `${index}`);
         } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-    const getExercisesFromAsyncStorage = async () => {
-        try {
-            const exercisesFromAsyncStorage = await AsyncStorage.getItem('exercises');
-            if (exercisesFromAsyncStorage !== null) {
-                setExercises(JSON.parse(exercisesFromAsyncStorage));
-            } else {
-                fetchExercises();
-            }
-        } catch (error) {
-            console.log(error);
+            console.log('Error saving current exercise index:', error);
         }
     }
 
@@ -103,12 +82,11 @@ export default function CsodAppSettingsScreen() {
             if (isSetViewed) {
                 setViewed(progress);
             }
-            await AsyncStorage.setItem(
-                'progress',
-                `${progress}`
-            );
+            await AsyncStorage.setItem('progress', `${progress}`);
+            // Also save current exercise index
+            await setCurrentExerciseIndex(progress);
         } catch (error) {
-            console.log(error);
+            console.log('Error saving progress:', error);
         }
     };
 
@@ -143,7 +121,7 @@ export default function CsodAppSettingsScreen() {
     /* endregion */
 
     useEffect(() => {
-        getExercisesFromAsyncStorage();
+        loadExercises();
         getProgressFromAsyncStorage();
     }, []);
 
@@ -160,7 +138,7 @@ export default function CsodAppSettingsScreen() {
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.modalBox}>
-                            <Text style={styles.modalText}>Biztosan a {continueFrom + 1}. gyakorlattól folytatod?</Text>
+                            <Text style={styles.modalText}>Biztosan a {continueFrom}. gyakorlattól folytatod?</Text>
                             <View style={styles.modalButtonContainer}>
                                 <TouchableOpacity onPress={() => {
                                     setIsModalOpened(false);
@@ -208,11 +186,21 @@ export default function CsodAppSettingsScreen() {
                                 textAlign: 'center'
                             }}
                             onEndEditing={text => {
-                                setContinueFrom(parseInt(text.nativeEvent.text - 1));
-                                setIsModalOpened(true);
+                                const enteredValue = parseInt(text.nativeEvent.text);
+                                if (!isNaN(enteredValue) && enteredValue > 0) {
+                                    // Find exercise with this index
+                                    const exercise = getExerciseByIndex(enteredValue);
+                                    if (exercise) {
+                                        setContinueFrom(exercise.index);
+                                    } else {
+                                        // If not found, use the entered value as index
+                                        setContinueFrom(enteredValue);
+                                    }
+                                    setIsModalOpened(true);
+                                }
                             }}
                             keyboardType="numeric"
-                            placeholder={(progress + 1) + ''}
+                            placeholder={progress > 0 ? progress.toString() : '1'}
                             // editable={false}
                         />
                     </TouchableOpacity>

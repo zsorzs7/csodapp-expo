@@ -11,7 +11,7 @@ export default function CsodAppReadScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.screenTitle}>{currentlyViewedExercise.index + 1}. gyakorlat</Text>
+            <Text style={styles.screenTitle}>{currentlyViewedExercise.index || ''}. gyakorlat</Text>
             <Text style={styles.exerciseTitle}>{currentlyViewedExercise.title}</Text>
             <ScrollView>
                 <View style={styles.pageContent}>

@@ -13,8 +13,8 @@ export default function CsodAppLibraryScreen() {
     const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
     const setLastRoute = useStoreActions((actions) => actions.setLastRoute);
 
-    const navigateToExercise = (id, title) => {
-        setCurrentlyViewedExercise(title);
+    const navigateToExercise = (exercise) => {
+        setCurrentlyViewedExercise(exercise);
         setLastRoute('Library');
         navigation.navigate('Read');
     }
@@ -33,10 +33,10 @@ export default function CsodAppLibraryScreen() {
                         <TouchableOpacity key={item.index}
                                           style={styles.titleContainer}
                                           onPress={() => {
-                                              navigateToExercise(item.index, exercises[item.index])
+                                              navigateToExercise(item)
                                           }}>
                             <Text style={styles.titleItemId}>
-                                {item.index + 1}.
+                                {item.index}.
                             </Text>
                             <Text style={styles.titleItemText}>
                                 {item.title}
