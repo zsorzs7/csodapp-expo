@@ -4,7 +4,7 @@
     "slug": "CsodApp",
     "version": "0.0.1",
     "orientation": "portrait",
-    "icon": "./assets/old/aclogo.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/old/splash.png",
@@ -19,13 +19,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/old/aclogo.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "icon": "./assets/icon.png",
+      "notification": {
+        "icon": "./assets/icon.png"
       },
       "package": "com.csodapp"
     },
     "web": {
-      "favicon": "./assets/old/aclogo.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {

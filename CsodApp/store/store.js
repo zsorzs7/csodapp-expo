@@ -43,5 +43,12 @@ export default createStore(
         }),
         /* endregion */
 
+        /* region Timer */
+        resetTimer: 0,
+        triggerTimerReset: action((state) => {
+            state.resetTimer = Date.now(); // Use timestamp to trigger reset
+        }),
+        /* endregion */
+
     })
 );

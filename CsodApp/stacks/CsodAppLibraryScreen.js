@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-import {View, StyleSheet, Text, ScrollView, Pressable, Image, FlatList} from "react-native";
+import React from "react";
+import {View, StyleSheet, Text, ScrollView, Pressable} from "react-native";
 import {useStoreState, useStoreActions} from "easy-peasy";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import Menu from "../components/Menu";
@@ -12,39 +12,52 @@ export default function CsodAppLibraryScreen() {
     /* region Navigate */
     const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
     const setLastRoute = useStoreActions((actions) => actions.setLastRoute);
+    const triggerTimerReset = useStoreActions((actions) => actions.triggerTimerReset);
 
-    const navigateToExercise = (exercise) => {
-        setCurrentlyViewedExercise(exercise);
-        setLastRoute('Library');
-        navigation.navigate('Read');
-    }
     /* endregion */
 
     /* region Exercises */
-    const exercises =  useStoreState(state => state.exercises);
+    const exercises = useStoreState(state => state.exercises);
+    
+    // Sort exercises by index to ensure correct order
+    const sortedExercises = exercises.length > 0 
+        ? [...exercises].sort((a, b) => {
+            const indexA = parseInt(a.index) || 0;
+            const indexB = parseInt(b.index) || 0;
+            return indexA - indexB;
+        })
+        : [];
     /* endregion */
+
+    const navigateToExercise = (exerciseIndex) => {
+        // Find the exercise by index from the original exercises array
+        const exercise = exercises.find(ex => parseInt(ex.index) === parseInt(exerciseIndex));
+        if (exercise) {
+            setCurrentlyViewedExercise(exercise);
+            setLastRoute('Library');
+            triggerTimerReset();
+            navigation.navigate('Read');
+        }
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.screenTitle}>Könyvtár</Text>
-                <FlatList
-                    data={exercises}
-                    renderItem={({item}) => (
-                        <TouchableOpacity key={item.index}
-                                          style={styles.titleContainer}
-                                          onPress={() => {
-                                              navigateToExercise(item)
-                                          }}>
-                            <Text style={styles.titleItemId}>
-                                {item.index}.
-                            </Text>
-                            <Text style={styles.titleItemText}>
-                                {item.title}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                    style={styles.exercisesList}
-                />
+            <ScrollView style={styles.exercisesList}>
+                {sortedExercises.map((item, index) => (
+                    <Pressable
+                        key={`exercise-${item.index}-${index}`}
+                        style={styles.titleContainer}
+                        onPress={() => navigateToExercise(item.index)}>
+                        <Text style={styles.titleItemId}>
+                            {item.index}.
+                        </Text>
+                        <Text style={styles.titleItemText}>
+                            {item.title}
+                        </Text>
+                    </Pressable>
+                ))}
+            </ScrollView>
             <Menu/>
         </View>
     );
@@ -105,7 +118,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9F9F9',
         height: '100%',
         alignSelf: "stretch",
-        paddingBottom: 90
+        paddingBottom: 60
     },
     exercisesList: {
         width: '100%',

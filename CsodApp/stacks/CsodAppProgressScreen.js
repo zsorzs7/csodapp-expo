@@ -33,6 +33,10 @@ const screenHeight = Dimensions.get('window').height;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 /* endregion */
 
+/* region Notifications */
+import { updateNotifications } from '../services/notificationService';
+/* endregion */
+
 export default function CsodAppProgressScreen() {
     const navigation = useNavigation();
 
@@ -118,6 +122,8 @@ export default function CsodAppProgressScreen() {
             await AsyncStorage.setItem('progress', `${nextIndex}`);
             // Also save current exercise index
             await setCurrentExerciseIndex(nextIndex);
+            // Update notifications with new exercise
+            await updateNotifications();
         } catch (error) {
             console.log('Error saving progress:', error);
         }
@@ -152,6 +158,8 @@ export default function CsodAppProgressScreen() {
     /* endregion */
 
     /* region Viewed */
+    const triggerTimerReset = useStoreActions((actions) => actions.triggerTimerReset);
+
     const viewPrevious = () => {
         const currentExercise = getExerciseByIndex(viewed);
         if (currentExercise) {
@@ -159,6 +167,7 @@ export default function CsodAppProgressScreen() {
             const prevExercise = getExerciseByIndex(prevIndex);
             if (prevExercise) {
                 setViewed(prevIndex);
+                triggerTimerReset(); // Reset timer when switching exercises
             }
         }
     }
@@ -170,6 +179,7 @@ export default function CsodAppProgressScreen() {
             const nextExercise = getExerciseByIndex(nextIndex);
             if (nextExercise) {
                 setViewed(nextIndex);
+                triggerTimerReset(); // Reset timer when switching exercises
             }
         }
     }
@@ -179,11 +189,15 @@ export default function CsodAppProgressScreen() {
     const setLastRoute = useStoreActions((actions) => actions.setLastRoute);
     const setCurrentlyViewedExercise = useStoreActions((actions) => actions.setCurrentlyViewedExercise);
 
-    const navigateToExercise = (index) => {
+    const navigateToExercise = async (index) => {
         const exercise = getExerciseByIndex(index);
         if (exercise) {
             setCurrentlyViewedExercise(exercise);
             setLastRoute('Progress');
+            triggerTimerReset(); // Reset timer when navigating to exercise
+            // Update current exercise index and notifications
+            await setCurrentExerciseIndex(exercise.index);
+            await updateNotifications();
             navigation.navigate('Read');
         }
     }

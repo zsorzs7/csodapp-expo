@@ -3,7 +3,7 @@ import {View, StyleSheet, Text, Image} from "react-native";
 import {useStoreState, useStoreActions} from "easy-peasy";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Dimensions} from 'react-native';
+import {Dimensions, Vibration} from 'react-native';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer'
 import { Audio } from "expo-av";
 
@@ -13,6 +13,7 @@ const screenHeight = Dimensions.get('window').height;
 
 export const Timer = () => {
     const doneExercisesToday = useStoreState((state) => state.doneExercisesToday);
+    const resetTimerTrigger = useStoreState((state) => state.resetTimer);
     const [stateDoneExercises, setStateDoneExercises] = useState(doneExercisesToday);
     const addDoneExercise = useStoreActions((actions) => actions.addDoneExercise);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -79,10 +80,25 @@ export const Timer = () => {
         setShouldPlay(true);
     };
 
+    const resetTimer = () => {
+        setIsPlaying(false);
+        setRemainingTime(600); // Reset to 10 minutes
+        setTimerKey(prev => prev + 1); // Force timer reset
+        setShouldPlay(false);
+    };
+
     const handlePause = (currentTime) => {
         setIsPlaying(false);
-        setRemainingTime(currentTime);
+        // Reset timer when stopping
+        resetTimer();
     };
+
+    // Watch for reset trigger from store (when exercises change)
+    useEffect(() => {
+        if (resetTimerTrigger > 0) {
+            resetTimer();
+        }
+    }, [resetTimerTrigger]);
 
     return (<View style={[styles.timer]}>
         <View style={{backgroundColor: 'white', borderRadius: 100, padding: 10, elevation: 0.5}}>
@@ -101,6 +117,8 @@ export const Timer = () => {
                         setHasPlayed(hasPlayed + 1);
                         stepUpToday();
                         playSound();
+                        // Vibrate the phone - pattern: vibrate for 500ms, pause 200ms, vibrate 500ms
+                        Vibration.vibrate([500, 200, 500]);
                         setRemainingTime(600); // Reset to 10 minutes
                         setTimerKey(prev => prev + 1); // Force timer reset
                         return {shouldRepeat: true, delay: 1.5}

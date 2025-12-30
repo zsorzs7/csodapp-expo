@@ -33,6 +33,10 @@ const screenHeight = Dimensions.get('window').height;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 /* endregion */
 
+/* region Notifications */
+import { scheduleDailyNotifications, cancelAllNotifications, requestNotificationPermissions, updateNotifications } from '../services/notificationService';
+/* endregion */
+
 export default function CsodAppSettingsScreen() {
     const navigation = useNavigation();
 
@@ -85,6 +89,8 @@ export default function CsodAppSettingsScreen() {
             await AsyncStorage.setItem('progress', `${progress}`);
             // Also save current exercise index
             await setCurrentExerciseIndex(progress);
+            // Update notifications with new exercise
+            await updateNotifications();
         } catch (error) {
             console.log('Error saving progress:', error);
         }
@@ -117,12 +123,49 @@ export default function CsodAppSettingsScreen() {
 
     /* region Change number */
     const [continueFrom, setContinueFrom] = useState(0);
-    const [pushNotification, setPushNotification] = useState(0);
+    const [pushNotification, setPushNotification] = useState(false);
+    /* endregion */
+
+    /* region Notifications */
+    const loadNotificationsEnabled = async () => {
+        try {
+            const enabled = await AsyncStorage.getItem('notificationsEnabled');
+            setPushNotification(enabled === 'true');
+        } catch (error) {
+            console.log('Error loading notifications enabled:', error);
+        }
+    };
+
+    const togglePushNotification = async () => {
+        try {
+            const newValue = !pushNotification;
+            setPushNotification(newValue);
+            await AsyncStorage.setItem('notificationsEnabled', newValue.toString());
+            
+            if (newValue) {
+                // Request permissions and schedule notifications
+                const hasPermission = await requestNotificationPermissions();
+                if (hasPermission) {
+                    await scheduleDailyNotifications();
+                } else {
+                    // If permission denied, revert toggle
+                    setPushNotification(false);
+                    await AsyncStorage.setItem('notificationsEnabled', 'false');
+                }
+            } else {
+                // Cancel all notifications
+                await cancelAllNotifications();
+            }
+        } catch (error) {
+            console.log('Error toggling notifications:', error);
+        }
+    };
     /* endregion */
 
     useEffect(() => {
         loadExercises();
         getProgressFromAsyncStorage();
+        loadNotificationsEnabled();
     }, []);
 
     const setUserProgress = useStoreActions((actions) => actions.setUserProgress);
@@ -209,9 +252,7 @@ export default function CsodAppSettingsScreen() {
                     <Text style={styles.titleItemText}>
                         Értesítések
                     </Text>
-                    <TouchableOpacity style={styles.titleItemText} onPress={async () => {
-                        // togglePushNotification();
-                    }}>
+                    <TouchableOpacity style={styles.titleItemText} onPress={togglePushNotification}>
                         {pushNotification ?
                             <Image style={{height: 38, width: 66}}
                                    source={require('../assets/old/radio-checked.png')}></Image> :

@@ -1,6 +1,7 @@
 /* region */
 import {StyleSheet} from 'react-native';
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import {useEffect} from 'react';
 /* endregion */
 
 /* region Navigation */
@@ -19,7 +20,16 @@ import store from './store/store';
 import {StoreProvider} from 'easy-peasy';
 /* endregion */
 
+/* region Notifications */
+import {initializeNotifications} from './services/notificationService';
+/* endregion */
+
 export default function App() {
+    useEffect(() => {
+        // Initialize notifications on app start
+        initializeNotifications();
+    }, []);
+
     return (
         <StoreProvider store={store}>
             <SafeAreaProvider>
